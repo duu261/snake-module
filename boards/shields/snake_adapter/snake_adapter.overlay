@@ -35,7 +35,7 @@
     dongle_action_direct_kscan: dongle_action_direct_kscan {
         compatible = "zmk,kscan-gpio-direct";
 	    input-gpios
-	        = <&gpio0 31 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+	        = <&gpio1 13 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
 	        ;
     };
 
@@ -94,7 +94,7 @@
 	pinctrl-1 = <&spi0_sleep>;
 	cs-gpios = <&gpio0 11 GPIO_ACTIVE_LOW>;
 	pinctrl-names = "default", "sleep";
-	
+
 	st7789v: st7789v@0 {
 		compatible = "sitronix,st7789v";
 		spi-max-frequency = <20000000>;
