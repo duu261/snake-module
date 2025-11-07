@@ -17,7 +17,7 @@
 
 	pwmbuzzer {
         compatible = "pwm-leds";
-        buzzer: buzzer_pwm {
+        buzzer: buzzer {
             pwms = <&pwm0 0 PWM_MSEC(10) PWM_POLARITY_NORMAL>;
         };
 		backlight: backlight {
