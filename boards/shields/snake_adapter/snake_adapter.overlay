@@ -15,6 +15,7 @@
         };
     };
 
+<<<<<<< HEAD
 	pwmbuzzer {
         compatible = "pwm-leds";
         buzzer: buzzer {
@@ -23,7 +24,16 @@
 		backlight: backlight {
 			pwms = <&pwm0 1 PWM_MSEC(1) PWM_POLARITY_NORMAL>; // Use PWM channel 1
 		};
+=======
+pwmbuzzer {
+    compatible = "pwm-leds";
+    buzzer: buzzer_pwm {
+        pwms = <&pwm0 0 PWM_MSEC(10) PWM_POLARITY_NORMAL>;
+        max-brightness = <255>;
+        default-brightness = <0>;   // <- keeps output LOW at startup
+>>>>>>> refs/remotes/origin/master
     };
+};
 
 	// pwmbacklight {
 	// 	compatible = "pwm-leds";
