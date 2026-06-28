@@ -116,30 +116,39 @@
 	cs-gpios = <&gpio0 11 GPIO_ACTIVE_LOW>;
 	pinctrl-names = "default", "sleep";
 
-	st7789v: st7789v@0 {
-		compatible = "sitronix,st7789v";
-		spi-max-frequency = <20000000>;
+	mipi_dbi: mipi_dbi@0 {
+		compatible = "zephyr,mipi-dbi-spi";
 		reg = <0>;
-		cmd-data-gpios = <&gpio0 24 GPIO_ACTIVE_LOW>;
+		spi-max-frequency = <20000000>;
+		dc-gpios = <&gpio0 24 GPIO_ACTIVE_LOW>;
 		reset-gpios = <&gpio0 22 GPIO_ACTIVE_LOW>;
-		width = <240>;
-		height = <240>;
-		x-offset = <0>;
-		y-offset = <0>;
-		vcom = <0x19>;
-		gctrl = <0x35>;
-		vrhs = <0x12>;
-		vdvs = <0x20>;
-		mdac = <0x00>;
-		lcm = <0x2c>;
-		colmod = <0x05>;
-		gamma = <0x01>;
-		porch-param = [08 08 00 22 22];
-		cmd2en-param = [5a 69 02 01];
-		pwctrl1-param = [a4 a1];
-		pvgam-param = [F0 00 0A 10 12 2A 3F 54 4B 1B 0E 0D 1F 23];
-		nvgam-param = [F0 00 0A 10 12 2C 3F 44 50 2D 1D 1F 20 23];
-		ram-param = [00 F0];
-		rgb-param = [CD 08 14];
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		st7789v: st7789v@0 {
+			compatible = "sitronix,st7789v";
+			mipi-mode = "MIPI_DBI_MODE_SPI_4WIRE";
+			mipi-max-frequency = <20000000>;
+			reg = <0>;
+			width = <240>;
+			height = <240>;
+			x-offset = <0>;
+			y-offset = <0>;
+			vcom = <0x19>;
+			gctrl = <0x35>;
+			vrhs = <0x12>;
+			vdvs = <0x20>;
+			mdac = <0x00>;
+			lcm = <0x2c>;
+			colmod = <0x05>;
+			gamma = <0x01>;
+			porch-param = [08 08 00 22 22];
+			cmd2en-param = [5a 69 02 01];
+			pwctrl1-param = [a4 a1];
+			pvgam-param = [F0 00 0A 10 12 2A 3F 54 4B 1B 0E 0D 1F 23];
+			nvgam-param = [F0 00 0A 10 12 2C 3F 44 50 2D 1D 1F 20 23];
+			ram-param = [00 F0];
+			rgb-param = [CD 08 14];
+		};
 	};
 };
