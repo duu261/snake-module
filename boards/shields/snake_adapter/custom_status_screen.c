@@ -32,7 +32,7 @@ void timer_splash(lv_timer_t * timer) {
         return;
     }
     if (splash_count >= SPLASH_FINAL_COUNT) {
-        print_background();
+        clean_up_splash();
         initialize_snake_game();
         initialize_battery_status();
         DefaultScreen screen = get_default_screen();
@@ -66,8 +66,7 @@ lv_obj_t* zmk_display_status_screen() {
             play_snake_game_intro();
         #endif
     #endif
-    
-    zmk_widget_peripheral_status_init();
+
     zmk_widget_splash_init();
     zmk_widget_snake_init();
     zmk_widget_output_status_init();
@@ -78,7 +77,10 @@ lv_obj_t* zmk_display_status_screen() {
     zmk_widget_modifier_init();
 
     lv_timer_create(timer_splash, SPLASH_DURATION, NULL);
-    lv_timer_create(logo_animation_timer, CONFIG_LOGO_WALK_INTERVAL, NULL);
+    SlotMode slot_mode = get_slot_mode();
+    if (slot_mode == SLOT_MODE_2) {
+        lv_timer_create(logo_animation_timer, CONFIG_LOGO_WALK_INTERVAL, NULL);
+    }
 
     return lv_obj_create(NULL);
 }

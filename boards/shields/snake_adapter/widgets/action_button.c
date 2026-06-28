@@ -1,12 +1,3 @@
-/*
- * Copyright (c) 2019 Jan Van Winkel <jan.van_winkel@dxplore.eu>
- *
- * Based on ST7789V sample:
- * Copyright (c) 2019 Marc Reilly
- *
- * SPDX-License-Identifier: Apache-2.0
- */
-
 #include <zephyr/logging/log.h>
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
@@ -33,7 +24,6 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include "helpers/settings.h"
 #include "theme.h"
 #include "wpm.h"
-//#include "snake_image.h"
 #include "logo.h"
 #include <stdint.h>
 
@@ -68,33 +58,54 @@ void set_mute_threshold(uint16_t term_ms) {
     mute_threshold = term_ms;
 }
 
-void print_container(uint8_t *buf_frame, uint16_t start_x, uint16_t end_x, uint16_t start_y, uint16_t end_y, uint16_t scale) {
-    print_rectangle(buf_frame, start_x, end_x - scale, start_y, end_y - scale, get_frame_color(), scale);
-    print_rectangle(buf_frame, start_x + scale, end_x - (scale * 2), start_y + scale, end_y - (scale * 2), get_frame_color_1(), scale);
-}
-
 void print_frames() {
     uint16_t thickness = 1;
-    // logo frame
-    print_container(buf_frame, 0, 240, 0, 113, thickness);
 
-    // status frames
-    print_container(buf_frame, 0, 120, 112, 161, thickness);
+    SlotMode slot_mode = get_slot_mode();
 
-    // theme frames
-    print_container(buf_frame, 120, 240, 112, 161, thickness);
+    print_rectangle(buf_frame, 0, 239, 0, 239, get_frame_color(), thickness);
+
+    if (slot_mode == SLOT_MODE_2) {
+        print_container(buf_frame, 1, 239, 1, 113, thickness); // snake slot
+        
+        print_container(buf_frame, 1, 120, 113, 161, thickness);   // slot 5
+        print_container(buf_frame, 120, 239, 113, 161, thickness); // slot 6
+    }
+
+    if (slot_mode == SLOT_MODE_4 || slot_mode == SLOT_MODE_5) {
+        print_container(buf_frame, 1, 239, 1, 73, thickness); // snake slot
+
+        print_container(buf_frame, 1, 120, 73, 117, thickness);   // slot 3
+        print_container(buf_frame, 120, 239, 73, 117, thickness); // slot 4
+        
+        print_container(buf_frame, 1, 120, 117, 161, thickness);   // slot 5
+        print_container(buf_frame, 120, 239, 117, 161, thickness); // slot 6
+    }
+
+    if (slot_mode == SLOT_MODE_6) {
+        print_container(buf_frame, 1, 120, 1, 55, thickness);     // slot 1
+        print_container(buf_frame, 120, 239, 1, 55, thickness);   // slot 2
+        print_container(buf_frame, 1, 120, 55, 108, thickness);   // slot 3
+        print_container(buf_frame, 120, 239, 55, 108, thickness); // slot 4
+        print_container(buf_frame, 1, 120, 108, 161, thickness);  // slot 5
+        print_container(buf_frame, 120, 239, 108, 161, thickness);// slot 6
+    }
 
     // battery frames 
-    #ifdef CONFIG_SHOW_SINGLE_BATTERY
-    print_container(buf_frame, 0, 240, 160, 240, thickness);
-    #else
-    print_container(buf_frame, 0, 120, 160, 240, thickness);
-    print_container(buf_frame, 120, 240, 160, 240, thickness);
-    #endif
+    if (get_battery_slots() == 1) {
+        print_container(buf_frame, 1, 239, 161, 239, thickness);
+    } else if (get_battery_slots() == 3) {
+        print_container(buf_frame, 1, 81, 161, 239, thickness);
+        print_container(buf_frame, 81, 159, 161, 239, thickness);
+        print_container(buf_frame, 159, 239, 161, 239, thickness);
+    } else {
+        print_container(buf_frame, 1, 120, 161, 239, thickness);
+        print_container(buf_frame, 120, 239, 161, 239, thickness);
+    }
 }
 
 void print_menu() {
-    clear_screen();
+    clear_screen(get_menu_bg_color());
     start_animation();
     print_frames();
     start_battery_status();
@@ -104,6 +115,7 @@ void print_menu() {
     start_layer_status();
     set_status_symbol();
     set_battery_symbol();
+    print_battery_widget();
     print_layer();
     print_themes();
     print_wpm();

@@ -28,10 +28,10 @@ static uint16_t layer_font_width = 3;
 static uint16_t layer_font_height = 5;
 static uint16_t *scaled_bitmap_layer_font;
 
-SlotSide layer_slot_side = SLOT_SIDE_NONE;
+Slot layer_slot;
 static uint16_t layer_x = 4;
 static uint16_t layer_x_end = 116;
-static uint16_t layer_y = 126;
+static uint16_t layer_y = 10;
 static uint8_t label_limit = 28;
 
 typedef enum {
@@ -64,37 +64,73 @@ LAYER_FONT get_font(size_t label_len) {
 }
 
 uint16_t get_y(size_t label_len) {
-    switch(get_font(label_len)) {
-        case FONT_4: return layer_y;
-        case FONT_3: return layer_y + 3;
-        case FONT_2: return layer_y + 5;
-        case FONT_1: return layer_y + 8;
-        default: return layer_y + 8;
+    SlotMode mode = get_slot_mode();
+    layer_slot = get_slot_by_name(SLOT_NAME_LAYER);
+    if (mode == SLOT_MODE_5 && layer_slot.number == SLOT_NUMBER_2) {
+        switch(get_font(label_len)) {
+            case FONT_4: return layer_y;
+            case FONT_3: return layer_y + 3;
+            case FONT_2: return layer_y + 6;
+            case FONT_1: return layer_y + 9;
+            default: return layer_y + 9;
+        }
+    } else {
+        switch(get_font(label_len)) {
+            case FONT_4: return layer_y;
+            case FONT_3: return layer_y + 3;
+            case FONT_2: return layer_y + 5;
+            case FONT_1: return layer_y + 8;
+            default: return layer_y + 8;
+        }
     }
 }
 
 uint16_t get_scale(size_t label_len) {
-    switch(get_font(label_len)) {
-        case FONT_4: return 4;
-        case FONT_3: return 3;
-        case FONT_2: return 2;
-        case FONT_1: return 1;
-        default: return 1;
+    SlotMode mode = get_slot_mode();
+    layer_slot = get_slot_by_name(SLOT_NAME_LAYER);
+    if (mode == SLOT_MODE_5 && layer_slot.number == SLOT_NUMBER_2) {
+        switch(get_font(label_len)) {
+            case FONT_4: return 9;
+            case FONT_3: return 7;
+            case FONT_2: return 6;
+            case FONT_1: return 5;
+            default: return 3;
+        }
+    } else {
+        switch(get_font(label_len)) {
+            case FONT_4: return 4;
+            case FONT_3: return 3;
+            case FONT_2: return 2;
+            case FONT_1: return 1;
+            default: return 1;
+        }
     }
 }
 
 uint16_t get_gap(size_t label_len) {
-    switch(get_font(label_len)) {
-        case FONT_4: return 2;
-        case FONT_3: return 1;
-        case FONT_2: return 1;
-        case FONT_1: return 1;
-        default: return 1;
+    SlotMode mode = get_slot_mode();
+    layer_slot = get_slot_by_name(SLOT_NAME_LAYER);
+    if (mode == SLOT_MODE_5 && layer_slot.number == SLOT_NUMBER_2) {
+        switch(get_font(label_len)) {
+            case FONT_4: return 4;
+            case FONT_3: return 3;
+            case FONT_2: return 2;
+            case FONT_1: return 1;
+            default: return 1;
+        }
+    } else {
+        switch(get_font(label_len)) {
+            case FONT_4: return 2;
+            case FONT_3: return 1;
+            case FONT_2: return 1;
+            case FONT_1: return 1;
+            default: return 1;
+        }
     }
 }
 
 uint16_t get_x(size_t label_len) {
-    uint16_t available_pixels = layer_x_end - layer_x; // 112
+    uint16_t available_pixels = layer_x_end - layer_x;
     uint16_t total_width = ((get_scale(label_len) * layer_font_width) + get_gap(label_len)) * label_len;
     uint16_t offset = (available_pixels - total_width) / 2;
     return layer_x + offset;
@@ -110,7 +146,7 @@ void clear_last_printed_label() {
 }
 
 void print_layer() {
-    if (layer_slot_side == SLOT_SIDE_NONE) {
+    if (layer_slot.number == SLOT_NUMBER_NONE) {
         return;
     }
     clear_last_printed_label();
@@ -146,18 +182,27 @@ ZMK_DISPLAY_WIDGET_LISTENER(widget_layer_status, struct layer_status_state, laye
 ZMK_SUBSCRIPTION(widget_layer_status, zmk_layer_state_changed);
 
 void zmk_widget_layer_init() {
-    uint16_t layer_font_size = (layer_font_width * layer_font_scale) * (layer_font_height * layer_font_scale);
-    scaled_bitmap_layer_font = k_malloc(layer_font_size * 2 * sizeof(uint16_t));
+    SlotMode mode = get_slot_mode();
+    layer_slot = get_slot_by_name(SLOT_NAME_LAYER);
+    if (mode == SLOT_MODE_5 && layer_slot.number == SLOT_NUMBER_2) {
+        layer_font_scale = 9;
+        layer_x = 22;
+        layer_x_end = 220;
+        layer_y = 16;
+    } else {
+        layer_x += layer_slot.x;
+        layer_x_end += layer_slot.x;
+        layer_y += layer_slot.y;
+    }
+    if (layer_slot.number != SLOT_NUMBER_NONE) {
+        uint16_t layer_font_size = (layer_font_width * layer_font_scale) * (layer_font_height * layer_font_scale);
+        scaled_bitmap_layer_font = k_malloc(layer_font_size * 2 * sizeof(uint16_t));
+    }
+
     last_printed_layer = (struct layer_status_state) {
         .index = 0,
         .label = '\0'
     };
-
-    layer_slot_side = get_slot_to_print(INFO_SLOT_LAYER);
-    if (layer_slot_side == SLOT_SIDE_RIGHT) {
-        layer_x += 120;
-        layer_x_end += 120;
-    }
 
     widget_layer_status_init();
 }
