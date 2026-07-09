@@ -106,18 +106,11 @@ void print_splash(void) {
     
     clear_screen(get_splash_bg_color());
 
-    uint16_t colors[4] = {
-        get_splash_logo_multicolor_0(),
-        get_splash_logo_multicolor_1(),
-        get_splash_logo_multicolor_2(),
-        get_splash_logo_multicolor_3(),
-    };
-
-    print_bitmap_multicolor(buf_splash_snake, CHAR_S, 5, snake_logo_start_height, snake_scale, colors, FONT_SIZE_10x13);
-	print_bitmap_multicolor(buf_splash_snake, CHAR_N, 50, snake_logo_start_height, snake_scale, colors, FONT_SIZE_10x13);
-	print_bitmap_multicolor(buf_splash_snake, CHAR_A, 95, snake_logo_start_height, snake_scale, colors, FONT_SIZE_10x13);
-	print_bitmap_multicolor(buf_splash_snake, CHAR_K, 140, snake_logo_start_height, snake_scale, colors, FONT_SIZE_10x13);
-	print_bitmap_multicolor(buf_splash_snake, CHAR_E, 185, snake_logo_start_height, snake_scale, colors, FONT_SIZE_10x13);
+    print_bitmap(buf_splash_snake, CHAR_S, 20, snake_logo_start_height, snake_scale, get_splash_logo_color(), get_splash_bg_color(), FONT_SIZE_3x6);
+	print_bitmap(buf_splash_snake, CHAR_N, 60, snake_logo_start_height, snake_scale, get_splash_logo_color(), get_splash_bg_color(), FONT_SIZE_3x6);
+	print_bitmap(buf_splash_snake, CHAR_A, 100, snake_logo_start_height, snake_scale, get_splash_logo_color(), get_splash_bg_color(), FONT_SIZE_3x6);
+	print_bitmap(buf_splash_snake, CHAR_K, 140, snake_logo_start_height, snake_scale, get_splash_logo_color(), get_splash_bg_color(), FONT_SIZE_3x6);
+	print_bitmap(buf_splash_snake, CHAR_E, 180, snake_logo_start_height, snake_scale, get_splash_logo_color(), get_splash_bg_color(), FONT_SIZE_3x6);
 
     Character created_chars[] = {
         CHAR_C,
